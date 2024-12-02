@@ -11,7 +11,7 @@ public: //** パブリック関数 **//
 	/// テクスチャを WIC から DDS に変換する
 	/// </summary>
 	/// <param name="filePath">ファイルパス</param>
-	void ConvertTextureWICToDDS(const std::string& filePath);
+	void ConvertTextureWICToDDS(const std::string& filePath, int numOptions = 0,char* options[] = nullptr);
 
 	/// <summary>
 	/// 使用方法を出力
@@ -39,11 +39,18 @@ private: //** プライベート関数 **//
 	/// <summary>
 	/// DDS テクスチャとしてファイル書き出し
 	/// </summary>
-	void SaveDDSTextureToFile();
+	void SaveDDSTextureToFile(int numOptions = 0, char* options[] = nullptr);
 	/// <summary>
 	/// マルチバイト文字列をワイド文字列に変換
 	/// </summary>
 	/// <param name="mString">マルチバイト文字列</param>
 	/// <returns>ワイド文字列</returns>
 	static std::wstring ConvertMultiByteStringToWideString(const std::string& mString);
+
+	/// <summary>
+	/// ミップマップを生成
+	/// </summary>
+	/// <param name="mipLevel">ミップマップレベル</param>
+	void GenerateMipmap(size_t mipLevel);
+
 };

@@ -14,15 +14,8 @@ enum Argment {
 };
 
 int main(int argc, char* argv[]) {
-	
-	printf("TextureConverter 起動\n");
 
-	for (int i = 1; i < argc; i++) {
-		printf("[Path:");
-		printf(argv[i]);
-		printf("]\n");
-	}
-	printf("\n");
+	printf("TextureConverter 起動\n");
 
 	// ファイルパスが指定されていない時
 	if (argc < _NumArgment) {
@@ -31,8 +24,6 @@ int main(int argc, char* argv[]) {
 		system("pause");
 		return 0;
 	}
-	//assert(_NumArgment <= argc);
-
 
 	// COM ライブラリの初期化
 	HRESULT hr;
@@ -42,8 +33,27 @@ int main(int argc, char* argv[]) {
 	// テクスチャコンバータ
 	TextureConverter converter;
 
+	// オプション数
+	int numOptions = argc - _NumArgment;
+	// オプション配列(ダブルポインタ)
+	char** options = argv + _NumArgment;
+
+	// パスを表示
+	printf("[Path:");
+	printf(argv[kFilePath]);
+	printf("]\n");
+	// コマンドオプションを表示
+	printf("Option:");
+	for (int i = 2; i < argc; i++) {
+		printf(argv[i]);
+		printf(" ");
+	}
+	printf("\n");
+	printf("\n");
+
+
 	// テクスチャ変換
-	converter.ConvertTextureWICToDDS(argv[kFilePath]);
+	converter.ConvertTextureWICToDDS(argv[kFilePath], numOptions, options);
 
 	// COM ライブラリの終了
 	CoUninitialize();
