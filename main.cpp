@@ -14,15 +14,33 @@ enum Argment {
 };
 
 int main(int argc, char* argv[]) {
+	
+	printf("TextureConverter 起動\n");
 
-	assert(_NumArgment <= argc);
+	for (int i = 1; i < argc; i++) {
+		printf("[Path:");
+		printf(argv[i]);
+		printf("]\n");
+	}
+	printf("\n");
+
+	// ファイルパスが指定されていない時
+	if (argc < _NumArgment) {
+		TextureConverter::OutputUsage();
+		TextureConverter::OutputEnd();
+		system("pause");
+		return 0;
+	}
+	//assert(_NumArgment <= argc);
+
 
 	// COM ライブラリの初期化
-	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+	HRESULT hr;
+	hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	assert(SUCCEEDED(hr));
 
 	// テクスチャコンバータ
-	TextrueConverter converter;
+	TextureConverter converter;
 
 	// テクスチャ変換
 	converter.ConvertTextureWICToDDS(argv[kFilePath]);

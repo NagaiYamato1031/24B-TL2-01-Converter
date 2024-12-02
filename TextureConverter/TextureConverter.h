@@ -5,7 +5,7 @@
 
 #include <Utility/Utility.h>
 
-class TextrueConverter {
+class TextureConverter {
 public: //** パブリック関数 **//
 	/// <summary>
 	/// テクスチャを WIC から DDS に変換する
@@ -13,13 +13,23 @@ public: //** パブリック関数 **//
 	/// <param name="filePath">ファイルパス</param>
 	void ConvertTextureWICToDDS(const std::string& filePath);
 
+	/// <summary>
+	/// 使用方法を出力
+	/// </summary>
+	static void OutputUsage();
+
+	/// <summary>
+	/// 終了したことを出力
+	/// </summary>
+	static void OutputEnd();
+
 private: //** プライベート変数 **//
 	// 画像の情報
 	DirectX::TexMetadata metadata_;
 	// 画像イメージのコンテナ
 	DirectX::ScratchImage scratchImage_;
 	// ファイル自体の情報
-	FileInformation fileInfo;
+	Utility::FileInformation fileInfo;
 private: //** プライベート関数 **//
 	/// <summary>
 	/// テクスチャファイル読み込み
@@ -30,5 +40,10 @@ private: //** プライベート関数 **//
 	/// DDS テクスチャとしてファイル書き出し
 	/// </summary>
 	void SaveDDSTextureToFile();
-
+	/// <summary>
+	/// マルチバイト文字列をワイド文字列に変換
+	/// </summary>
+	/// <param name="mString">マルチバイト文字列</param>
+	/// <returns>ワイド文字列</returns>
+	static std::wstring ConvertMultiByteStringToWideString(const std::string& mString);
 };
