@@ -4,18 +4,33 @@ using namespace DirectX;
 using namespace Utility;
 
 void TextureConverter::ConvertTextureWICToDDS(const std::string& filePath, int numOptions, char* options[]) {
+	OutputStart();
+	
 	// テクスチャファイル読み込み
 	LoadWICTextureFromFile(filePath);
 	// DDS ファイル書き出し
 	SaveDDSTextureToFile(numOptions, options);
+
+	// 実行チェック
+	if (commandFlag_ & COMMANDS::cCheck) {
+		printf("\n-check コマンドが実行されました。停止中です。\n\n");
+		system("pause");
+	}
+
+	OutputEnd();
 }
 
 
 void TextureConverter::OutputUsage() {
 	printf("画像ファイルを WIC 形式から DDS 形式に変換します\n\n");
-	printf("TextureConverter [ドライブ:][パス][ファイル名] [-ml level]\n\n");
+	printf("TextureConverter [ドライブ:][パス][ファイル名] [-ml level] [-check]\n\n");
 	printf("-[ドライブ:][パス][ファイル名]: 変換したい WIC 形式の画像ファイルを指定\n\n");
-	printf("-[-ml level]: ミップレベルを指定。 0 を指定すると 1x1 までのフルミップマップチェーンを生成します\n");
+	printf("-[-ml level]: ミップレベルを指定。 0 を指定すると 1x1 までのフルミップマップチェーンを生成します。\n\n");
+	printf("-[-check]: -check コマンドで実行後停止します。指定しない場合停止しません。\n\n");
+}
+
+void TextureConverter::OutputStart() {
+	printf("\nTextureConverter 起動\n\n");
 }
 
 void TextureConverter::OutputEnd() {
@@ -24,40 +39,53 @@ void TextureConverter::OutputEnd() {
 
 void TextureConverter::LoadWICTextureFromFile(const std::string& filePath) {
 	// フォルダパスとファイル名を分離する
-	fileInfo = FileInformation(ConvertMultiByteStringToWideString(filePath));
+	fileInfo_ = FileInformation(ConvertMultiByteStringToWideString(filePath));
 
 	printf(".読み込み中");
 
-	std::wstring a = fileInfo.File();
+	std::wstring a = fileInfo_.File();
 	// WIC テクスチャ読み込み
 	HRESULT hr;
 	hr = LoadFromWICFile(a.c_str(), WIC_FLAGS_NONE, &metadata_, scratchImage_);
 	if (FAILED(hr)) {
 		printf("\r\033[2K");
 		printf("!読み込み失敗 ");
-		wprintf(L"[%ws]\n", fileInfo.Full().c_str());
+		wprintf(L"[%ws]\n", fileInfo_.Full().c_str());
 		OutputEnd();
 		system("pause");
 		exit(0);
 	}
 	printf("\r\033[2K");
 	printf(">読み込み完了 ");
-	wprintf(L"[%ws]\n", fileInfo.Full().c_str());
+	wprintf(L"[%ws]\n", fileInfo_.Full().c_str());
 }
 
 void TextureConverter::SaveDDSTextureToFile(int numOptions, char* options[]) {
 	HRESULT hr;
 
-	// ミップマップレベル指定を検索
+	// ミップレベル
+	size_t mipLevel = 0;
+
+	// コマンド情報を取得
 	for (int i = 0; i < numOptions; i++) {
+		// ミップマップを生成するか
 		if (std::string(options[i]) == "-ml") {
 			// ミップレベル指定
-			size_t mipLevel = 0;
 			mipLevel = std::stoi(options[i + 1]);
 			// ミップマップ生成
-			GenerateMipmap(mipLevel);
-			break;
+			commandFlag_ = commandFlag_ | COMMANDS::cMip;
 		}
+		// 実行チェックするか
+		if (std::string(options[i]) == "-check") {
+			// チェックする
+			commandFlag_ = commandFlag_ | COMMANDS::cCheck;
+		}
+	}
+
+	// ミップマップコマンドがあるか
+	if (commandFlag_ & COMMANDS::cMip) {
+		// ミップマップ生成
+		GenerateMipmap(mipLevel);
 	}
 
 	printf(".圧縮中");
@@ -77,7 +105,7 @@ void TextureConverter::SaveDDSTextureToFile(int numOptions, char* options[]) {
 	metadata_.format = MakeSRGB(metadata_.format);
 
 	// 出力ファイル名を設定する
-	std::wstring filePath = fileInfo.FilePath() + L".dds";
+	std::wstring filePath = fileInfo_.FilePath() + L".dds";
 
 	printf(".出力中");
 	// DDS ファイル書き出し
@@ -87,8 +115,6 @@ void TextureConverter::SaveDDSTextureToFile(int numOptions, char* options[]) {
 	printf("\r\033[2K");
 	printf(">出力完了 ");
 	wprintf(L"[%ws]\n", filePath.c_str());
-
-	OutputEnd();
 }
 
 std::wstring TextureConverter::ConvertMultiByteStringToWideString(const std::string& mString) {

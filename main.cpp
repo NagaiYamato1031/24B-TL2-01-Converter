@@ -15,12 +15,9 @@ enum Argment {
 
 int main(int argc, char* argv[]) {
 
-	printf("TextureConverter 起動\n");
-
 	// ファイルパスが指定されていない時
 	if (argc < _NumArgment) {
 		TextureConverter::OutputUsage();
-		TextureConverter::OutputEnd();
 		system("pause");
 		return 0;
 	}
@@ -58,6 +55,5 @@ int main(int argc, char* argv[]) {
 	// COM ライブラリの終了
 	CoUninitialize();
 
-	system("pause");
 	return 0;
 }

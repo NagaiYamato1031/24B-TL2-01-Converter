@@ -19,9 +19,20 @@ public: //** パブリック関数 **//
 	static void OutputUsage();
 
 	/// <summary>
+	/// 開始したことを出力
+	/// </summary>
+	static void OutputStart();
+	/// <summary>
 	/// 終了したことを出力
 	/// </summary>
 	static void OutputEnd();
+
+private: //** サブクラス **//
+
+	enum COMMANDS : uint32_t {
+		cMip = 0b1,
+		cCheck = 0b10,
+	};
 
 private: //** プライベート変数 **//
 	// 画像の情報
@@ -29,7 +40,9 @@ private: //** プライベート変数 **//
 	// 画像イメージのコンテナ
 	DirectX::ScratchImage scratchImage_;
 	// ファイル自体の情報
-	Utility::FileInformation fileInfo;
+	Utility::FileInformation fileInfo_;
+	// コマンドのフラグ	
+	uint32_t commandFlag_ = 0b0;
 private: //** プライベート関数 **//
 	/// <summary>
 	/// テクスチャファイル読み込み
